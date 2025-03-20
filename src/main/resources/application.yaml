@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: Flashcards
+  profiles:
+    active: original
+  banner:
+    location: logo-app
+  h2:
+    console:
+      enabled: true
+      path: /my-console
+  datasource:
+    username: den
+    password: qwerty
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./src/main/resources/db/cards
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
