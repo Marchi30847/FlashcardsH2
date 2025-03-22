@@ -2,13 +2,14 @@ package org.example.flashcards.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Card {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String english;
@@ -22,6 +23,14 @@ public class Card {
     }
 
     public Card() {}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return english.equals(card.english) && polish.equals(card.polish) && german.equals(card.german);
+    }
 
     public Long getId() {return id;}
     public String getEnglish() {return english;}

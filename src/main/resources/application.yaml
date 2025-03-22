@@ -13,8 +13,10 @@ spring:
     username: den
     password: qwerty
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./src/main/resources/db/cards
+    url: jdbc:h2:file:./db/cards
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
