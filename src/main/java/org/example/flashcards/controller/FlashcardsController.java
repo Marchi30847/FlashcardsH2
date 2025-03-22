@@ -102,15 +102,24 @@ public class FlashcardsController {
         displayService.display("Enter an id of the card you want to delete");
         displayService.display("-------------------------------------------------------------------------");
 
-        try {
-            Long id = scanner.nextLong();
-            scanner.nextLine();
-            cardService.delete(id);
-        } catch (InputMismatchException e) {
+        if (!scanner.hasNextLong()) {
             displayService.display("Invalid input, please follow the format");
+            scanner.next();
+            return;
+        }
+
+        Long id = scanner.nextLong();
+        scanner.nextLine();
+
+        try {
+            cardService.delete(id);
         } catch (NonexistentCardException e) {
             displayService.display("The flashcard is not in the dictionary.");
+            return;
         }
+
+        displayService.display("Your flashcard is deleted");
+        displayService.display("-------------------------------------------------------------------------");
     }
 
     public void modifyCard() {
@@ -119,9 +128,17 @@ public class FlashcardsController {
         displayService.display("Enter an id of the word you want to modify");
         displayService.display("-------------------------------------------------------------------------");
 
+
+        if (!scanner.hasNextLong()) {
+            displayService.display("Invalid input, please follow the format");
+            scanner.next();
+            return;
+        }
+
+        Long id = scanner.nextLong();
+        scanner.nextLine();
+
         try {
-            Long id = scanner.nextLong();
-            scanner.nextLine();
             Card card = cardService.getCardById(id);
 
             displayService.display("Enter a new word in English");
@@ -137,11 +154,13 @@ public class FlashcardsController {
             card.setGerman(germanWord.isBlank() ? card.getGerman() : germanWord);
 
             cardService.update(card);
-        } catch (InputMismatchException e) {
-            displayService.display("Invalid input, please follow the format");
         } catch (NonexistentCardException e) {
             displayService.display("The flashcard is not in the dictionary.");
+            return;
         }
+
+        displayService.display("Your flashcard is updated");
+        displayService.display("-------------------------------------------------------------------------");
     }
 
     private void displayDictionary() {
