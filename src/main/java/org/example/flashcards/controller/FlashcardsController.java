@@ -126,15 +126,15 @@ public class FlashcardsController {
 
             displayService.display("Enter a new word in English");
             String englishWord = scanner.nextLine();
-            card.setEnglish(englishWord);
+            card.setEnglish(englishWord.isBlank() ? card.getEnglish() : englishWord);
 
             displayService.display("Enter a new word in Polish");
             String polishWord = scanner.nextLine();
-            card.setPolish(polishWord);
+            card.setPolish(polishWord.isBlank() ? card.getPolish() : polishWord);
 
             displayService.display("Enter a new word in German");
             String germanWord = scanner.nextLine();
-            card.setGerman(germanWord);
+            card.setGerman(germanWord.isBlank() ? card.getGerman() : germanWord);
 
             cardService.update(card);
         } catch (InputMismatchException e) {
