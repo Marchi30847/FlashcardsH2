@@ -5,26 +5,24 @@ import org.example.flashcards.exception.DuplicateCardException;
 import org.example.flashcards.exception.EmptyDictionaryException;
 import org.example.flashcards.exception.IncorrectInputException;
 import org.example.flashcards.exception.NonexistentCardException;
-import org.example.flashcards.service.CardService;
-import org.example.flashcards.service.DisplayService;
+import org.example.flashcards.service.display.FormatService;
 import org.example.flashcards.service.SpringDataCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 @Controller
 public class FlashcardsController {
-    private final DisplayService displayService;
+    private final FormatService formatService;
     private final SpringDataCardService cardService;
     private final Scanner scanner;
 
     @Autowired
-    public FlashcardsController(DisplayService displayService, SpringDataCardService cardService, Scanner scanner) {
-        this.displayService = displayService;
+    public FlashcardsController(FormatService formatService, SpringDataCardService cardService, Scanner scanner) {
+        this.formatService = formatService;
         this.cardService = cardService;
         this.scanner = scanner;
 
@@ -33,16 +31,16 @@ public class FlashcardsController {
 
     public void start() {
         while (true) {
-            displayService.display("Enter 1 to add a new card");
-            displayService.display("Enter 2 to delete a card");
-            displayService.display("Enter 3 to modify a card");
-            displayService.display("Enter 4 to display the dictionary");
-            displayService.display("Enter 5 to sort and display the dictionary");
-            displayService.display("Enter 6 to start the test");
-            displayService.display("Enter 7 to exit");
+            System.out.println(formatService.format("Enter 1 to add a new card"));
+            System.out.println(formatService.format("Enter 2 to delete a card"));
+            System.out.println(formatService.format("Enter 3 to modify a card"));
+            System.out.println(formatService.format("Enter 4 to display the dictionary"));
+            System.out.println(formatService.format("Enter 5 to sort and display the dictionary"));
+            System.out.println(formatService.format("Enter 6 to start the test"));
+            System.out.println(formatService.format("Enter 7 to exit"));
 
             if (!scanner.hasNextInt()) {
-                displayService.display("Invalid input, please enter a number between 1 and 6.");
+                System.out.println(formatService.format("Invalid input, please enter a number between 1 and 6."));
                 scanner.next();
                 continue;
             }
@@ -58,24 +56,25 @@ public class FlashcardsController {
                 case 5 -> displayDictionarySorted();
                 case 6 -> startTest();
                 case 7 -> System.exit(0);
-                default -> displayService.display("Invalid choice, please enter a number between 1 and 6.");
+                default ->
+                        System.out.println(formatService.format("Invalid choice, please enter a number between 1 and 6."));
             }
         }
     }
 
     private void addCard() {
-        displayService.display("\n" + "ADD A NEW FLASHCARD");
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display("Enter a word in the following format: english,polish,german");
-        displayService.display("Example: apple,jabłko,Apfel");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("\n" + "ADD A NEW FLASHCARD"));
+        displayBreakLine();
+        System.out.println(formatService.format("Enter a word in the following format: english,polish,german"));
+        System.out.println(formatService.format("Example: apple,jabłko,Apfel"));
+        displayBreakLine();
 
         String userInput = scanner.nextLine();
 
         List<String> translations = List.of(userInput.split(","));
 
         if (translations.size() != 3) {
-            displayService.display("Invalid input, please follow the format");
+            System.out.println(formatService.format("Invalid input, please follow the format"));
             return;
         }
 
@@ -88,22 +87,22 @@ public class FlashcardsController {
         try {
             cardService.add(card);
         } catch (DuplicateCardException e) {
-            displayService.display("The flashcard is already in the dictionary.");
+            System.out.println(formatService.format("The flashcard is already in the dictionary."));
             return;
         }
 
-        displayService.display("A new flashcard added");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("A new flashcard added"));
+        displayBreakLine();
     }
 
     private void deleteCard() {
-        displayService.display("\n" + "DELETE AN EXISTING FLASHCARD");
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display("Enter an id of the card you want to delete");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("\n" + "DELETE AN EXISTING FLASHCARD"));
+        displayBreakLine();
+        System.out.println(formatService.format("Enter an id of the card you want to delete"));
+        displayBreakLine();
 
         if (!scanner.hasNextLong()) {
-            displayService.display("Invalid input, please follow the format");
+            System.out.println(formatService.format("Invalid input, please follow the format"));
             scanner.next();
             return;
         }
@@ -114,23 +113,23 @@ public class FlashcardsController {
         try {
             cardService.delete(id);
         } catch (NonexistentCardException e) {
-            displayService.display("The flashcard is not in the dictionary.");
+            System.out.println(formatService.format("The flashcard is not in the dictionary."));
             return;
         }
 
-        displayService.display("Your flashcard is deleted");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("Your flashcard is deleted"));
+        displayBreakLine();
     }
 
     public void modifyCard() {
-        displayService.display("\n" + "MODIFY AN EXISTING FLASHCARD");
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display("Enter an id of the word you want to modify");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("\n" + "MODIFY AN EXISTING FLASHCARD"));
+        displayBreakLine();
+        System.out.println(formatService.format("Enter an id of the word you want to modify"));
+        displayBreakLine();
 
 
         if (!scanner.hasNextLong()) {
-            displayService.display("Invalid input, please follow the format");
+            System.out.println(formatService.format("Invalid input, please follow the format"));
             scanner.next();
             return;
         }
@@ -141,26 +140,26 @@ public class FlashcardsController {
         try {
             Card card = cardService.getCardById(id);
 
-            displayService.display("Enter a new word in English");
+            System.out.println(formatService.format("Enter a new word in English"));
             String englishWord = scanner.nextLine();
             card.setEnglish(englishWord.isBlank() ? card.getEnglish() : englishWord);
 
-            displayService.display("Enter a new word in Polish");
+            System.out.println(formatService.format("Enter a new word in Polish"));
             String polishWord = scanner.nextLine();
             card.setPolish(polishWord.isBlank() ? card.getPolish() : polishWord);
 
-            displayService.display("Enter a new word in German");
+            System.out.println(formatService.format("Enter a new word in German"));
             String germanWord = scanner.nextLine();
             card.setGerman(germanWord.isBlank() ? card.getGerman() : germanWord);
 
             cardService.update(card);
         } catch (NonexistentCardException e) {
-            displayService.display("The flashcard is not in the dictionary.");
+            System.out.println(formatService.format("The flashcard is not in the dictionary."));
             return;
         }
 
-        displayService.display("Your flashcard is updated");
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("Your flashcard is updated"));
+        displayBreakLine();
     }
 
     private void displayDictionary() {
@@ -168,7 +167,7 @@ public class FlashcardsController {
         try {
             cards = cardService.getDictionary();
         } catch (EmptyDictionaryException e) {
-            displayService.display("The dictionary is empty.");
+            System.out.println(formatService.format("The dictionary is empty."));
             return;
         }
 
@@ -176,16 +175,15 @@ public class FlashcardsController {
     }
 
     private void displayDictionarySorted() {
-        displayService.display("\n" + "DICTIONARY SORTED");
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display("Enter one of the following languages to order by: english, polish, german");
-        displayService.display("-------------------------------------------------------------------------");
-
+        System.out.println(formatService.format("\n" + "DICTIONARY SORTED"));
+        displayBreakLine();
+        System.out.println(formatService.format("Enter one of the following languages to order by: english, polish, german"));
+        displayBreakLine();
         String language = scanner.nextLine();
 
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display("Enter how you want to order the dictionary: asc, desc");
-        displayService.display("-------------------------------------------------------------------------");
+        displayBreakLine();
+        System.out.println(formatService.format("Enter how you want to order the dictionary: asc, desc"));
+        displayBreakLine();
 
         String order = scanner.nextLine();
 
@@ -193,10 +191,10 @@ public class FlashcardsController {
         try {
             cards = cardService.getDictionarySorted(language, order);
         } catch (EmptyDictionaryException e) {
-            displayService.display("The dictionary is empty.");
+            System.out.println(formatService.format("The dictionary is empty."));
             return;
         } catch (IncorrectInputException e) {
-            displayService.display("Invalid input, please follow the format");
+            System.out.println(formatService.format("Invalid input, please follow the format"));
             return;
         }
 
@@ -204,22 +202,26 @@ public class FlashcardsController {
     }
 
     private void displayListAsDictionary(List<Card> cards) {
-        displayService.display("\n" + "DICTIONARY");
-        displayService.display("-------------------------------------------------------------------------");
-        displayService.display(String.format("| %-15s | %-15s | %-15s | %-15s |", "Id", "English", "Polish", "German"));
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("\n" + "DICTIONARY"));
+        displayBreakLine();
+        System.out.println(formatService.format(
+                        String.format("| %-15s | %-15s | %-15s | %-15s |",
+                                "Id", "English", "Polish", "German")
+                )
+        );
+        displayBreakLine();
 
         cards.forEach(this::displayCard);
 
-        displayService.display("-------------------------------------------------------------------------");
+        displayBreakLine();
     }
 
     private void displayCard(Card card) {
-        displayService.display(
+        System.out.println(formatService.format(
                 String.format("| %-15s | %-15s | %-15s | %-15s |",
                         card.getId(), card.getEnglish(), card.getPolish(), card.getGerman()
                 )
-        );
+        ));
     }
 
     private void startTest() {
@@ -227,7 +229,7 @@ public class FlashcardsController {
         try {
             cards = cardService.getDictionary();
         } catch (EmptyDictionaryException e) {
-            displayService.display("The dictionary is empty.");
+            System.out.println(formatService.format("The dictionary is empty."));
             return;
         }
 
@@ -248,25 +250,29 @@ public class FlashcardsController {
         String correct2 = languages[randomLanguage][4];
         String correct2Lang = languages[randomLanguage][5];
 
-        displayService.display("\n" + "Translate the card from " + questionLang + ": " + questionWord);
-        displayService.display("-------------------------------------------------------------------------");
+        System.out.println(formatService.format("Translate the card from " + questionLang + ": " + questionWord));
+        displayBreakLine();
 
-        displayService.display(correct1Lang + ": ");
+        System.out.println(formatService.format(correct1Lang + ": "));
         String userAnswer1 = scanner.nextLine().trim().toLowerCase();
 
-        displayService.display(correct2Lang + ": ");
+        System.out.println(formatService.format(correct2Lang + ": "));
         String userAnswer2 = scanner.nextLine().trim().toLowerCase();
 
-        displayService.display("-------------------------------------------------------------------------");
+        displayBreakLine();
 
         if (userAnswer1.equalsIgnoreCase(correct1) && userAnswer2.equalsIgnoreCase(correct2)) {
-            displayService.display("Correct!");
+            System.out.println(formatService.format("Correct!"));
         } else {
-            displayService.display("Wrong! Correct answer: " + correct1Lang + " = " + correct1 +
-                    ", " + correct2Lang + " = " + correct2);
+            System.out.println(formatService.format("Wrong! Correct answer: " + correct1Lang + " = " + correct1 +
+                    ", " + correct2Lang + " = " + correct2));
         }
 
-        displayService.display("-------------------------------------------------------------------------");
+        displayBreakLine();
+    }
+
+    private void displayBreakLine() {
+        System.out.println(formatService.format("-------------------------------------------------------------------------"));
     }
 
 }
