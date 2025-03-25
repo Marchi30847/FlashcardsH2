@@ -58,6 +58,16 @@ public class CardService {
         return cardRepository.findAllSorted(language, order);
     }
 
+    public List<Card> searchForAll(String pattern) throws EmptyDictionaryException {
+        List<Card> allContaining = cardRepository.findAllByContainingPattern(pattern);
+
+        if (allContaining.isEmpty()) {
+            throw new EmptyDictionaryException("The dictionary is empty");
+        }
+
+        return allContaining;
+    }
+
     public Card getCardById(Long id) throws NonexistentCardException {
         return cardRepository.findById(id)
                 .orElseThrow(() -> new NonexistentCardException("The card does not exist"));

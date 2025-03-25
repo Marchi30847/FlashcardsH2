@@ -81,6 +81,18 @@ public class SpringDataCardService {
         return cards;
     }
 
+    public List<Card> searchForAll(String pattern) throws EmptyDictionaryException {
+        List<Card> allContaining = springDataCardRepository.findAllByEnglishContainingIgnoreCaseOrPolishContainingIgnoreCaseOrGermanContainingIgnoreCase(pattern, pattern, pattern);
+
+        if (allContaining.isEmpty()) {
+            throw new EmptyDictionaryException("The dictionary is empty");
+        }
+
+        return allContaining.stream()
+                .distinct()
+                .toList();
+    }
+
     public Card getCardById(Long id) throws NonexistentCardException {
         return springDataCardRepository.findById(id)
                 .orElseThrow(() -> new NonexistentCardException("The card does not exist"));

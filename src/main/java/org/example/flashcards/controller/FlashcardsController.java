@@ -5,6 +5,7 @@ import org.example.flashcards.exception.DuplicateCardException;
 import org.example.flashcards.exception.EmptyDictionaryException;
 import org.example.flashcards.exception.IncorrectInputException;
 import org.example.flashcards.exception.NonexistentCardException;
+import org.example.flashcards.service.CardService;
 import org.example.flashcards.service.display.FormatService;
 import org.example.flashcards.service.SpringDataCardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ import java.util.Scanner;
 @Controller
 public class FlashcardsController {
     private final FormatService formatService;
-    private final SpringDataCardService cardService;
+    private final CardService cardService;
     private final Scanner scanner;
 
     @Autowired
-    public FlashcardsController(FormatService formatService, SpringDataCardService cardService, Scanner scanner) {
+    public FlashcardsController(FormatService formatService, CardService cardService, Scanner scanner) {
         this.formatService = formatService;
         this.cardService = cardService;
         this.scanner = scanner;
@@ -36,8 +37,9 @@ public class FlashcardsController {
             System.out.println(formatService.format("Enter 3 to modify a card"));
             System.out.println(formatService.format("Enter 4 to display the dictionary"));
             System.out.println(formatService.format("Enter 5 to sort and display the dictionary"));
-            System.out.println(formatService.format("Enter 6 to start the test"));
-            System.out.println(formatService.format("Enter 7 to exit"));
+            System.out.println(formatService.format("Enter 6 to display cards containing a pattern"));
+            System.out.println(formatService.format("Enter 7 to start the test"));
+            System.out.println(formatService.format("Enter 8 to exit"));
 
             if (!scanner.hasNextInt()) {
                 System.out.println(formatService.format("Invalid input, please enter a number between 1 and 6."));
@@ -54,8 +56,9 @@ public class FlashcardsController {
                 case 3 -> modifyCard();
                 case 4 -> displayDictionary();
                 case 5 -> displayDictionarySorted();
-                case 6 -> startTest();
-                case 7 -> System.exit(0);
+                case 6 -> displayContainingPattern();
+                case 7 -> startTest();
+                case 8 -> System.exit(0);
                 default ->
                         System.out.println(formatService.format("Invalid choice, please enter a number between 1 and 6."));
             }
@@ -198,6 +201,23 @@ public class FlashcardsController {
             return;
         }
 
+        displayListAsDictionary(cards);
+    }
+
+    private void displayContainingPattern() {
+        System.out.println(formatService.format("\n" + "WORDS CONTAINING PATTERN"));
+        displayBreakLine();
+        System.out.println(formatService.format("Enter the pattern you want to display"));
+        displayBreakLine();
+        String pattern = scanner.nextLine();
+
+        List<Card> cards;
+        try {
+            cards = cardService.searchForAll(pattern);
+        } catch (EmptyDictionaryException e) {
+            System.out.println(formatService.format("The dictionary is empty."));
+            return;
+        }
         displayListAsDictionary(cards);
     }
 
