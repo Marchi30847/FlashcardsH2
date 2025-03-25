@@ -2,6 +2,7 @@ package org.example.flashcards.repository;
 
 import org.example.flashcards.entity.Card;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

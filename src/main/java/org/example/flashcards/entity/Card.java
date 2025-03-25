@@ -29,7 +29,9 @@ public class Card {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return english.equals(card.english) && polish.equals(card.polish) && german.equals(card.german);
+        return english.equalsIgnoreCase(card.english) &&
+                polish.equalsIgnoreCase(card.polish) &&
+                german.equalsIgnoreCase(card.german);
     }
 
     public Long getId() {return id;}
